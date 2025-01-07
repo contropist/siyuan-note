@@ -1,17 +1,5 @@
-import {hasClosestBlock, hasClosestByAttribute} from "../util/hasClosest";
+import {hasClosestBlock, hasClosestByAttribute, isInEmbedBlock} from "../util/hasClosest";
 import {Constants} from "../../constants";
-
-export const getPreviousHeading = (element: Element) => {
-    let previous = getPreviousBlock(element);
-    while (previous) {
-        if (previous.getAttribute("data-type") === "NodeHeading") {
-            break;
-        } else {
-            previous = getPreviousBlock(previous);
-        }
-    }
-    return previous;
-};
 
 export const getPreviousBlock = (element: Element) => {
     let parentElement = element;
@@ -31,7 +19,7 @@ export const getPreviousBlock = (element: Element) => {
 export const getLastBlock = (element: Element) => {
     let lastElement;
     Array.from(element.querySelectorAll("[data-node-id]")).reverse().find(item => {
-        if (!hasClosestByAttribute(item.parentElement, "data-type", "NodeBlockQueryEmbed")) {
+        if (!isInEmbedBlock(item)) {
             lastElement = item;
             return true;
         }
@@ -42,7 +30,7 @@ export const getLastBlock = (element: Element) => {
 export const getFirstBlock = (element: Element) => {
     let firstElement;
     Array.from(element.querySelectorAll("[data-node-id]")).find(item => {
-        if (!hasClosestByAttribute(item.parentElement, "data-type", "NodeBlockQueryEmbed") && !item.classList.contains("li")) {
+        if (!isInEmbedBlock(item) && !item.classList.contains("li") && !item.classList.contains("sb")) {
             firstElement = item;
             return true;
         }
@@ -82,7 +70,11 @@ export const getContenteditableElement = (element: Element) => {
     if (!element || (element.getAttribute("contenteditable") === "true") && !element.classList.contains("protyle-wysiwyg")) {
         return element;
     }
-    return element.querySelector('[contenteditable="true"]');
+    const editableElement = element.querySelector('[contenteditable="true"]');
+    if (editableElement && !hasClosestByAttribute(editableElement, "data-type", "NodeBlockQueryEmbed")) {
+        return editableElement;
+    }
+    return undefined;
 };
 
 export const isNotEditBlock = (element: Element) => {
@@ -178,6 +170,53 @@ export const hasPreviousSibling = (element: Node) => {
             previousSibling = previousSibling.previousSibling;
         } else {
             return previousSibling;
+        }
+    }
+    return false;
+};
+
+export const getNextFileLi = (current: Element) => {
+    let nextElement = current.nextElementSibling;
+    if (nextElement) {
+        if (nextElement.tagName === "LI") {
+            return nextElement;
+        } else if (nextElement.tagName === "UL") {
+            return nextElement.firstElementChild;
+        }
+        return false;
+    }
+    nextElement = current.parentElement;
+    while (nextElement.tagName === "UL") {
+        if (!nextElement.nextElementSibling) {
+            nextElement = nextElement.parentElement;
+        } else if (nextElement.nextElementSibling.tagName === "LI") {
+            return nextElement.nextElementSibling;
+        } else if (nextElement.nextElementSibling.tagName === "UL") {
+            return nextElement.nextElementSibling.firstElementChild;
+        }
+    }
+    return false;
+};
+
+export const getPreviousFileLi = (current: Element) => {
+    let previousElement = current.previousElementSibling;
+    if (previousElement) {
+        if (previousElement.tagName === "LI") {
+            return previousElement;
+        } else if (previousElement.tagName === "UL") {
+            return previousElement.lastElementChild;
+        }
+        return false;
+    }
+    previousElement = current.parentElement;
+    while (previousElement.tagName === "UL") {
+        if (!previousElement.previousElementSibling) {
+            previousElement = previousElement.parentElement;
+        } else if (previousElement.previousElementSibling.tagName === "LI") {
+            return previousElement.previousElementSibling;
+        } else if (previousElement.previousElementSibling.tagName === "UL") {
+            const liElements = previousElement.previousElementSibling.querySelectorAll(".b3-list-item");
+            return liElements[liElements.length - 1];
         }
     }
     return false;

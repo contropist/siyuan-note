@@ -1,4 +1,4 @@
-// SiYuan - Build Your Eternal Digital Garden
+// SiYuan - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,40 +17,16 @@
 package api
 
 import (
-	"mime"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/88250/gulu"
 	"github.com/88250/lute/ast"
 	"github.com/gin-gonic/gin"
-	"github.com/siyuan-note/logging"
 	"github.com/siyuan-note/siyuan/kernel/conf"
 	"github.com/siyuan-note/siyuan/kernel/model"
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
-
-func serveSnippets(c *gin.Context) {
-	name := strings.TrimPrefix(c.Request.URL.Path, "/snippets/")
-	ext := filepath.Ext(name)
-	name = strings.TrimSuffix(name, ext)
-	confSnippets, err := model.LoadSnippets()
-	if nil != err {
-		logging.LogErrorf("load snippets failed: %s", name, err)
-		c.Status(404)
-		return
-	}
-
-	for _, s := range confSnippets {
-		if s.Name == name && ("" != ext && s.Type == ext[1:]) {
-			c.Header("Content-Type", mime.TypeByExtension(ext))
-			c.String(http.StatusOK, s.Content)
-			return
-		}
-	}
-	c.Status(404)
-}
 
 func getSnippet(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
@@ -67,9 +43,13 @@ func getSnippet(c *gin.Context) {
 	if 0 == enabledArg {
 		enabled = false
 	}
+	var keyword string
+	if nil != arg["keyword"] {
+		keyword = arg["keyword"].(string)
+	}
 
 	confSnippets, err := model.LoadSnippets()
-	if nil != err {
+	if err != nil {
 		ret.Code = -1
 		ret.Msg = "load snippets failed: " + err.Error()
 		return
@@ -81,6 +61,17 @@ func getSnippet(c *gin.Context) {
 			snippets = append(snippets, s)
 		}
 	}
+
+	if "" != keyword {
+		var snippetsFiltered []*conf.Snippet
+		for _, s := range snippets {
+			if strings.Contains(strings.ToLower(s.Name), strings.ToLower(keyword)) || strings.Contains(strings.ToLower(s.Content), strings.ToLower(keyword)) {
+				snippetsFiltered = append(snippetsFiltered, s)
+			}
+		}
+		snippets = snippetsFiltered
+	}
+
 	if 1 > len(snippets) {
 		snippets = []*conf.Snippet{}
 	}
@@ -117,7 +108,7 @@ func setSnippet(c *gin.Context) {
 	}
 
 	err := model.SetSnippet(snippets)
-	if nil != err {
+	if err != nil {
 		ret.Code = -1
 		ret.Msg = "set snippet failed: " + err.Error()
 		return
@@ -135,7 +126,7 @@ func removeSnippet(c *gin.Context) {
 
 	id := arg["id"].(string)
 	snippet, err := model.RemoveSnippet(id)
-	if nil != err {
+	if err != nil {
 		ret.Code = -1
 		ret.Msg = "remove snippet failed: " + err.Error()
 		return

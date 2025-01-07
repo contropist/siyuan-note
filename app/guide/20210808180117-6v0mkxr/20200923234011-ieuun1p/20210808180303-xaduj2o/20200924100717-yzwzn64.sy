@@ -44,7 +44,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "~/Documents/SiYuan/"
+					"TextMarkTextContent": "~/SiYuan/"
 				},
 				{
 					"Type": "NodeText",
@@ -81,78 +81,6 @@
 				{
 					"Type": "NodeText",
 					"Data": "Kernel working directory path, automatically obtained according to the kernel executable file entry if it is not specified."
-				}
-			]
-		},
-		{
-			"ID": "20201225172241-r2u4sx1",
-			"Type": "NodeHeading",
-			"HeadingLevel": 3,
-			"Properties": {
-				"id": "20201225172241-r2u4sx1"
-			},
-			"Children": [
-				{
-					"Type": "NodeHeadingC8hMarker",
-					"Data": "### "
-				},
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "code",
-					"TextMarkTextContent": "--resident"
-				}
-			]
-		},
-		{
-			"ID": "20201225172241-1ikfkn1",
-			"Type": "NodeParagraph",
-			"Properties": {
-				"id": "20201225172241-1ikfkn1"
-			},
-			"Children": [
-				{
-					"Type": "NodeText",
-					"Data": "After specifying with "
-				},
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "code",
-					"TextMarkTextContent": "--resident=true"
-				},
-				{
-					"Type": "NodeText",
-					"Data": ", the kernel will be resident in memory, the default is "
-				},
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "code",
-					"TextMarkTextContent": "true"
-				},
-				{
-					"Type": "NodeText",
-					"Data": "."
-				}
-			]
-		},
-		{
-			"ID": "20201225172241-gon6cqc",
-			"Type": "NodeParagraph",
-			"Properties": {
-				"id": "20201225172241-gon6cqc"
-			},
-			"Children": [
-				{
-					"Type": "NodeText",
-					"Data": "After set to "
-				},
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "code",
-					"TextMarkTextContent": "false"
-				},
-				{
-					"Type": "NodeText",
-					"Data": ", the list of active sessions will be checked every 30 seconds, and the kernel process will be exited if there are no active sessions."
 				}
 			]
 		},
@@ -225,32 +153,11 @@
 					"Data": "Used to specify the browser access "
 				},
 				{
-					"Type": "NodeBlockRef",
-					"Children": [
-						{
-							"Type": "NodeOpenParen"
-						},
-						{
-							"Type": "NodeOpenParen"
-						},
-						{
-							"Type": "NodeBlockRefID",
-							"Data": "20210104091447-3vmymbk"
-						},
-						{
-							"Type": "NodeBlockRefSpace"
-						},
-						{
-							"Type": "NodeBlockRefText",
-							"Data": "authentication password"
-						},
-						{
-							"Type": "NodeCloseParen"
-						},
-						{
-							"Type": "NodeCloseParen"
-						}
-					]
+					"Type": "NodeTextMark",
+					"TextMarkType": "block-ref",
+					"TextMarkBlockRefID": "20210104091447-3vmymbk",
+					"TextMarkBlockRefSubtype": "s",
+					"TextMarkTextContent": "authentication password"
 				},
 				{
 					"Type": "NodeText",
